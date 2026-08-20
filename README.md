@@ -1,166 +1,241 @@
 # Customer Churn Prediction
 
-An end-to-end machine learning capstone for identifying customers at risk of churn and translating model scores into retention priorities.
+<div align="center">
 
-## Business Problem
+### Turning customer behavior into timely retention action
 
-Customer churn reduces recurring revenue and increases the cost of replacing customers. The business needs an early-warning system that identifies customers who are likely to leave while there is still time to intervene.
+An end-to-end machine learning capstone that ranks customers by churn risk, explains the signals behind that risk, and turns predictions into a practical retention workflow.
 
-This project combines customer profile data and recent customer behavior to estimate the probability of churn for each customer. The output is intended to support targeted retention actions such as service recovery, loyalty outreach, relevant offers, and proactive account contact.
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![Notebook](https://img.shields.io/badge/Analysis-Jupyter%20Notebook-F37626?logo=jupyter&logoColor=white)
+![Model](https://img.shields.io/badge/Champion-LightGBM-2D8CFF)
+![Status](https://img.shields.io/badge/Status-Capstone%20Complete-1F9D55)
 
-## Business Objective
+📊 **15,000** training customers &nbsp;|&nbsp; 🎯 **21.3%** churn prevalence &nbsp;|&nbsp; 🚀 **0.7745** validation ROC-AUC
 
-Build a repeatable churn classification workflow that:
+</div>
+
+> **Executive takeaway:** The model is designed to help retention teams decide **who to contact, when to contact them, and what evidence supports the intervention**. It is a decision-support system, not an automated penalty engine.
+
+## 🌐 Business Context
+
+Customer churn reduces recurring revenue and increases replacement cost. The business needs an early-warning system that identifies customers who may leave while there is still time to improve their experience.
+
+This project joins customer profile and behavioral data, engineers commercial and engagement signals, compares multiple classifiers, and produces a customer-level prediction file for downstream retention action.
+
+### 🎯 Business objective
+
+Build a repeatable workflow that:
 
 - Identifies high-risk customers before churn occurs.
 - Explains the behavioral and commercial signals associated with churn.
 - Helps retention teams prioritize limited outreach capacity.
-- Produces a customer-level prediction file for downstream action.
+- Produces predictions that can be evaluated through controlled campaigns.
 
-The model is a decision-support tool. It should not automatically penalize or restrict customers.
+## ❓ The WH Questions
 
-## Key Business Questions
-
-| Question | How this project addresses it |
+| Business question | Analytical answer |
 |---|---|
-| Who is most likely to churn? | Customer-level churn predictions and risk ranking. |
-| What behaviors signal churn risk? | EDA, engineered behavioral features, correlations, and feature importance. |
-| Which customer groups should be prioritized? | KMeans customer segmentation and segment-level churn rates. |
-| When should the business intervene? | Use the predicted probability and an intervention threshold aligned to campaign capacity. |
-| Why use machine learning? | Churn is influenced by interacting profile, engagement, spend, support, and loyalty signals. |
-| How should predictions create value? | Convert risk scores into targeted retention actions and measure incremental retention. |
+| **Who** is likely to churn? | Rank customers using predicted churn probability. |
+| **What** signals risk? | Examine recency, spend, engagement, support, contract, and loyalty features. |
+| **Where** is the opportunity? | Compare KMeans customer segments and segment-level churn rates. |
+| **When** should we intervene? | Set a threshold using risk, recency, customer lifecycle, and campaign capacity. |
+| **Why** use machine learning? | Churn is driven by interacting nonlinear signals across multiple data domains. |
+| **How** does this create value? | Convert scores into action bands and measure incremental retention, revenue, and cost. |
 
-## Solution Architecture
+## 🧭 End-to-End Architecture
 
 ```mermaid
 flowchart LR
-    A[Profile data] --> C[Data validation and merge]
-    B[Behavior data] --> C
-    C --> D[Cleaning and feature engineering]
-    D --> E[Customer segmentation]
-    D --> F[Preprocessing]
-    F --> G[Imbalance handling]
-    G --> H[Model comparison and tuning]
-    H --> I[Churn probability and class prediction]
-    I --> J[Retention prioritization]
-    J --> K[Campaign measurement]
+    A[(Profile CSV)] --> C{Validate keys}
+    B[(Behavior CSV)] --> C
+    C --> D[Merge on customer_id]
+    D --> E[Clean and normalize]
+    E --> F[Feature engineering]
+    F --> G[Customer segmentation]
+    F --> H[Train/validation split]
+    H --> I[Impute, scale, encode]
+    I --> J[SMOTE / Tomek experiments]
+    J --> K[Compare six classifiers]
+    K --> L[Randomized LightGBM tuning]
+    L --> M[Churn probability]
+    M --> N[Risk bands and retention queue]
+    N --> O[Campaign experiment]
+    O --> P[(Incremental business value)]
 ```
 
-## Notebook Workflow
+### 🔄 Decision journey
 
-`Code.ipynb` contains the complete analysis:
+```mermaid
+sequenceDiagram
+    participant Data as Customer data
+    participant ML as Churn model
+    participant CRM as Retention team
+    participant Test as Campaign measurement
 
-1. Setup and reproducibility configuration.
-2. Profile and behavior data loading and merging.
+    Data->>ML: Profile + behavior records
+    ML->>ML: Clean, engineer, segment, validate
+    ML->>CRM: Risk score + customer priority
+    CRM->>CRM: Choose service, loyalty, or engagement action
+    CRM->>Test: Launch treatment and holdout groups
+    Test-->>ML: Retention, revenue, and cost feedback
+```
+
+## 📦 Data at a Glance
+
+<div align="center">
+
+| Training customers | Test customers | Training columns | Retained | Churned |
+|---:|---:|---:|---:|---:|
+| **15,000** | **5,000** | **25** | **11,812** | **3,188** |
+
+</div>
+
+The repository contains the complete project inputs and outputs:
+
+- `train_customer_profile.csv` and `train_customer_behavior.csv`
+- `test_customer_profile.csv` and `test_customer_behavior.csv`
+- `train_df.csv`, `Submissions.csv`, and `churn_predictions.csv`
+- `Business_Brief.pdf` and the executable analysis notebook
+
+⚠️ These are customer-level records. Confirm data-publication permissions before sharing the repository outside the intended audience.
+
+### Feature families
+
+| Family | Example signals | Business interpretation |
+|---|---|---|
+| 👤 Profile | Age, tenure, region, income tier | Customer context and lifecycle |
+| 💳 Commercial | Purchase frequency, order value, six-month spend | Relationship depth and value |
+| 📱 Engagement | Recency, app sessions, email opens, campaign response | Activity and attention |
+| 🛠️ Service | Support tickets, satisfaction, returns ratio | Friction and experience quality |
+| 💎 Loyalty | Contract type, loyalty tier, promotion usage | Stickiness and incentive history |
+
+See [DATA_DICTIONARY.md](DATA_DICTIONARY.md) for the field-level reference.
+
+## 🧪 Modeling Strategy
+
+The notebook follows a deterministic, reproducible modeling path:
+
+```mermaid
+flowchart TD
+    A[Baseline: Logistic Regression] --> B[Tree models]
+    B --> C[Boosting models]
+    C --> D[LightGBM candidate]
+    D --> E[Randomized hyperparameter search]
+    E --> F[Validation and feature importance]
+    F --> G[Full-data fit and submission]
+```
+
+### Why LightGBM?
+
+LightGBM is the leading candidate because it:
+
+1. Performs strongly on structured tabular data.
+2. Captures nonlinear interactions between customer behaviors.
+3. Trains efficiently for repeated experimentation.
+4. Provides useful feature-importance diagnostics.
+5. Complements the interpretable Logistic Regression baseline.
+
+The analysis compares Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, XGBoost, and LightGBM. Class imbalance is investigated with SMOTE and Tomek Links.
+
+## 📈 Model Scoreboard
+
+The current notebook reports these comparison results:
+
+| Sampling strategy | Model | ROC-AUC | F1 | Average Precision |
+|:---|:---|---:|---:|---:|
+| SMOTE | LightGBM | **0.7718** | 0.5088 | 0.5707 |
+| Tomek Links | LightGBM | 0.7687 | **0.5585** | **0.5805** |
+| Tomek Links | Gradient Boosting | 0.7701 | 0.4960 | 0.5683 |
+| Tomek Links | XGBoost | 0.7570 | 0.5439 | 0.5493 |
+| Tomek Links | Random Forest | 0.7634 | 0.4165 | 0.5536 |
+
+### 🏆 Tuned LightGBM validation snapshot
+
+<div align="center">
+
+| Metric | Result |
+|:---|---:|
+| Best cross-validation ROC-AUC | **0.7712** |
+| Validation ROC-AUC | **0.7745** |
+| Average Precision / PR-AUC | **0.5849** |
+| Accuracy | **78.93%** |
+| Churn precision | **50.00%** |
+| Churn recall | **60.00%** |
+| Churn F1-score | **0.5479** |
+| Full Tomek 5-fold ROC-AUC | **0.7773 +/- 0.0093** |
+| Test predicted churn rate | **12.22%** |
+
+</div>
+
+> **Metric choice matters:** because churn is a minority class, accuracy alone can hide missed churners. ROC-AUC, PR-AUC, recall, precision, and F1 are reported together so the operating trade-off is visible.
+
+## 💡 From Prediction to Action
+
+| Risk band | Suggested action | Measurement |
+|:---|:---|:---|
+| 🔴 High risk | Proactive service recovery or account contact | Retention lift and revenue protected |
+| 🟠 Medium risk | Personalized loyalty or engagement intervention | Response and conversion rate |
+| 🟢 Low risk | Standard lifecycle communication | Cost-efficient baseline retention |
+
+The threshold should be chosen using campaign capacity and the relative cost of missed churn versus unnecessary outreach. The strongest next step is a holdout or A/B campaign measuring **incremental retention**, not just model accuracy.
+
+## 📓 Notebook Workflow
+
+[Code.ipynb](Code.ipynb) contains the complete analysis:
+
+1. Setup and reproducibility configuration with `SEED = 42`.
+2. Profile and behavior loading, key validation, and merging.
 3. Exploratory data analysis and missing-value review.
 4. Data cleaning and categorical normalization.
-5. Behavioral, spend, engagement, inactivity, support, loyalty, and risk features.
-6. KMeans customer segmentation with PCA visualization.
+5. Spend, engagement, inactivity, support, loyalty, and risk features.
+6. KMeans segmentation with PCA visualization.
 7. Imputation, scaling, and ordinal encoding.
-8. SMOTE and Tomek Links experiments for class imbalance.
-9. Comparison of Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, XGBoost, and LightGBM.
-10. Randomized LightGBM hyperparameter search.
-11. Validation metrics, confusion matrix, precision-recall analysis, and feature importance.
-12. Full-training-data fit and customer-level submission generation.
+8. SMOTE and Tomek Links imbalance experiments.
+9. Six-model comparison and LightGBM tuning.
+10. Evaluation, confusion matrix, precision-recall analysis, and feature importance.
+11. Full-training-data fit and customer-level prediction generation.
 
-## Data
+## 🚀 Run Locally
 
-The notebook expects these files in the repository root:
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+```
 
-- `train_customer_profile.csv`
-- `train_customer_behavior.csv`
-- `test_customer_profile.csv`
-- `test_customer_behavior.csv`
+Open `Code.ipynb` in VS Code or Jupyter and run it from top to bottom. The notebook uses repository-relative paths and writes generated predictions to `outputs/churn_predictions.csv`.
 
-This repository includes the raw input files and generated prediction artifacts so the complete capstone can be reviewed in one place. Confirm that the data is permitted for public publication before pushing the repository publicly. The input data contains customer-level records and should be treated as potentially sensitive.
+## ⚠️ Limitations and Responsible Use
 
-The training data contains 15,000 customers and the test data contains 5,000 customers. The merged training table contains 25 columns, including the binary `churn` target. The observed training target distribution is approximately 78.7% retained and 21.3% churned.
+- The current metrics are notebook-reported results, not a production guarantee.
+- Resampling and unsupervised segmentation should be fitted inside each validation fold for a fully leakage-safe estimate.
+- Calibration, threshold economics, confidence intervals, and slice-based fairness checks should be added before deployment.
+- Feature importance shows predictive association, not causality.
+- A high-risk prediction should trigger helpful support, never adverse treatment.
+- Demographic fields should be reviewed for fairness, necessity, and governance.
+- Customer identifiers and raw records require appropriate access controls.
 
-### Main fields
-
-- Customer identity: `customer_id`
-- Target: `churn`
-- Profile: age, tenure, gender, region, income tier, education, marital status
-- Commercial behavior: purchase frequency, average order value, total six-month spend, returns ratio
-- Engagement: recency, email open rate, app sessions, campaign response rate
-- Service and loyalty: support tickets, satisfaction score, product categories, contract type, preferred channel, loyalty tier, promotion usage, payment method
-
-## Model Choice
-
-LightGBM was selected as the leading candidate because it performs well on mixed tabular data, captures nonlinear interactions, trains efficiently, and provides useful feature-importance diagnostics. Logistic Regression provides an interpretable linear baseline, while tree ensembles and boosting models provide progressively more flexible comparisons.
-
-The target is imbalanced, so accuracy alone is not an adequate selection criterion. The analysis emphasizes ROC-AUC, average precision/PR-AUC, churn recall, churn precision, and churn F1-score. The final operating threshold should be chosen with the business cost of missed churn, unnecessary outreach, and available campaign capacity in mind.
-
-## Reported Results
-
-The current notebook outputs report the following validation results for the tuned LightGBM workflow:
-
-| Metric | Reported result |
-|---|---:|
-| Best cross-validation ROC-AUC | 0.7712 |
-| Validation ROC-AUC | 0.7745 |
-| Average Precision | 0.5849 |
-| Accuracy | 0.7893 |
-| Churn precision | 0.50 |
-| Churn recall | 0.60 |
-| Churn F1-score | 0.5479 |
-| Full Tomek-resampled 5-fold ROC-AUC | 0.7773 +/- 0.0093 |
-| Test predicted churn rate | 12.22% |
-
-These are the notebook's current reported values, not a guarantee of production performance. Resampling and unsupervised segmentation should ideally be fitted inside each training fold to obtain a fully leakage-safe estimate. A future revision should also include calibration, threshold analysis, confidence intervals, and business-cost evaluation.
-
-## Interpretation and Retention Use
-
-A practical deployment would rank customers by predicted churn probability and divide them into action bands, for example:
-
-- High risk: proactive service recovery or account contact.
-- Medium risk: personalized engagement or loyalty intervention.
-- Low risk: standard lifecycle communication.
-
-The intervention policy should be tested using an experiment or holdout campaign. Success should be measured by incremental retention, revenue protected, campaign cost, offer cost, and customer experience, rather than model accuracy alone.
-
-## Reproducibility
-
-1. Create a Python 3.10+ environment.
-2. Install dependencies:
-
-   ```powershell
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   python -m pip install -r requirements.txt
-   ```
-
-3. Place the four input CSV files in the repository root.
-4. Open `Code.ipynb` in VS Code or Jupyter.
-5. Run the notebook from top to bottom.
-6. Review the generated file at `outputs/churn_predictions.csv` or the existing root-level prediction artifact.
-
-The notebook uses `SEED = 42` for reproducible random operations. It writes generated outputs to `outputs/` and no longer depends on the original machine-specific absolute paths.
-
-## Limitations and Responsible Use
-
-- The dataset appears to be a structured capstone dataset; external validity must be tested before real-world use.
-- A churn prediction is not a causal statement. High-risk customers should receive support, not adverse treatment.
-- Demographic and regional fields should be reviewed for fairness and necessity before deployment.
-- Model performance can drift as products, pricing, campaigns, and customer behavior change.
-- The present notebook's validation design has leakage risks around resampling and clustering; reported metrics should be treated as provisional until corrected with fold-safe pipelines.
-- Feature importance describes predictive association, not causal impact.
-- Customer identifiers and raw records must be protected and excluded from public repositories unless publication is explicitly authorized.
-
-## Repository Structure
+## 🗂️ Repository Map
 
 ```text
 .
-├── Business_Brief.pdf
-├── Code.ipynb
-├── README.md
-├── requirements.txt
-├── .gitignore
-├── Submissions.csv
-├── churn_predictions.csv
-├── train_customer_profile.csv
-├── train_customer_behavior.csv
-├── test_customer_profile.csv
-├── test_customer_behavior.csv
-└── train_df.csv
+├── Business_Brief.pdf              # Original business requirements
+├── Code.ipynb                      # Complete analysis and model workflow
+├── DATA_DICTIONARY.md              # Feature-level reference
+├── README.md                       # Project narrative and operating guide
+├── requirements.txt                # Python dependencies
+├── train_customer_profile.csv      # Training profile data
+├── train_customer_behavior.csv     # Training behavior data
+├── test_customer_profile.csv       # Test profile data
+├── test_customer_behavior.csv      # Test behavior data
+├── train_df.csv                    # Merged training artifact
+├── Submissions.csv                 # Existing submission artifact
+└── churn_predictions.csv           # Existing prediction artifact
 ```
+
+<div align="center">
+
+⭐ Built as a data-science capstone: from business question to measurable retention decision.
+
+</div>
