@@ -246,9 +246,3 @@ Open `Code.ipynb` in VS Code or Jupyter and run it from top to bottom. The noteb
 ├── Submissions.csv                 # Existing submission artifact
 └── churn_predictions.csv           # Existing prediction artifact
 ```
-
-<div align="center">
-
-⭐ Built as a data-science capstone: from business question to measurable retention decision.
-
-</div>
