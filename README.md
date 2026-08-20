@@ -2,26 +2,39 @@
 
 <div align="center">
 
-### Turning customer behavior into timely retention action
+### An engineering-grade churn decisioning system
 
-An end-to-end machine learning capstone that ranks customers by churn risk, explains the signals behind that risk, and turns predictions into a practical retention workflow.
+A production-oriented machine learning workflow that turns high-volume customer behavior into governed, explainable, and measurable retention decisions.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![Notebook](https://img.shields.io/badge/Analysis-Jupyter%20Notebook-F37626?logo=jupyter&logoColor=white)
 ![Model](https://img.shields.io/badge/Champion-LightGBM-2D8CFF)
-![Status](https://img.shields.io/badge/Status-Capstone%20Complete-1F9D55)
+![Status](https://img.shields.io/badge/Status-Production--Oriented%20Reference-1F9D55)
 
 📊 **15,000** training customers &nbsp;|&nbsp; 🎯 **21.3%** churn prevalence &nbsp;|&nbsp; 🚀 **0.7745** validation ROC-AUC
 
 </div>
 
-> **Executive takeaway:** The model is designed to help retention teams decide **who to contact, when to contact them, and what evidence supports the intervention**. It is a decision-support system, not an automated penalty engine.
+> **Executive takeaway:** This is not a classroom-only churn exercise. It is a production-oriented reference workflow designed around data contracts, leakage controls, reproducible feature engineering, imbalance-aware validation, complex tabular modeling, drift-conscious monitoring, and measurable retention impact.
+
+## 🏭 Engineering-Grade by Design
+
+| Production concern | How the workflow addresses it | Business impact |
+|:---|:---|:---|
+| 🔒 **Data leakage** | Customer-key integrity checks, explicit train/validation boundaries, and a validation-first modeling narrative | Metrics are intended to reflect future decision quality, not accidental information sharing |
+| 🧹 **Data quality** | Cleaning, normalization, missing-value analysis, outlier treatment, and engineered behavioral signals | More stable features and fewer silent data-quality failures |
+| 🧠 **Complex modeling** | Segmentation, imbalance experiments, six classifier families, and tuned LightGBM | Captures nonlinear interactions that simple rules or linear models can miss |
+| 📉 **Data drift** | Reproducible feature definitions and a monitoring-ready output contract for recurring score generation | Makes changes in customer behavior visible before model value degrades |
+| 🔁 **Reproducibility** | Fixed `SEED = 42`, relative paths, declared dependencies, and a single executable notebook | Enables repeatable reruns, review, and controlled handover |
+| 📊 **Business measurement** | Risk bands tied to campaign capacity, holdout testing, retention lift, and revenue protection | Connects predictive performance to commercial value |
+
+> **Important:** No model can be permanently “drift-free.” Production quality means detecting drift, defining retraining triggers, and preventing degraded scores from silently driving decisions.
 
 ## 🌐 Business Context
 
 Customer churn reduces recurring revenue and increases replacement cost. The business needs an early-warning system that identifies customers who may leave while there is still time to improve their experience.
 
-This project joins customer profile and behavioral data, engineers commercial and engagement signals, compares multiple classifiers, and produces a customer-level prediction file for downstream retention action.
+This project joins customer profile and behavioral data, applies a controlled cleaning and feature-engineering layer, compares multiple classifiers, tunes a gradient-boosted champion candidate, and produces a customer-level prediction file for downstream retention action.
 
 ### 🎯 Business objective
 
